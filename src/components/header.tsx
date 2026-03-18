@@ -3,7 +3,6 @@
 import {
   FilmSlateIcon,
   MagnifyingGlassIcon,
-  PlusCircleIcon,
   SignOutIcon,
   YoutubeLogoIcon,
 } from "@phosphor-icons/react";
@@ -23,12 +22,12 @@ import {
 import { authClient } from "@/server/better-auth/client";
 import type { Session } from "@/server/better-auth/config";
 import appPackage from "../../package.json";
+import { AddVideoButton } from "./add-video-button";
 import {
   InputGroup,
   InputGroupButton,
   InputGroupInput,
 } from "./ui/input-group";
-import { AddVideoButton } from "./add-video-button";
 
 interface HeaderProps {
   user?: Session["user"] | null;

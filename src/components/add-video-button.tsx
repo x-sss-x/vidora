@@ -1,13 +1,12 @@
 "use client";
 
-import MuxUploader, {
-  MuxUploaderDrop,
-  MuxUploaderFileSelect,
-} from "@mux/mux-uploader-react";
+import MuxUploader from "@mux/mux-uploader-react";
 import { PlusCircleIcon } from "@phosphor-icons/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { authClient } from "@/server/better-auth/client";
 import { api } from "@/trpc/react";
-import { Button, buttonVariants } from "./ui/button";
+import { Button } from "./ui/button";
 import {
   Dialog,
   DialogContent,
@@ -16,8 +15,6 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Spinner } from "./ui/spinner";
-import { authClient } from "@/server/better-auth/client";
-import { useRouter } from "next/navigation";
 
 export function AddVideoButton() {
   const [open, setOpen] = useState(false);
