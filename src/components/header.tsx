@@ -37,7 +37,7 @@ export function Header({ user, onLogout }: HeaderProps) {
   };
 
   return (
-    <header className="fixed top-0 h-14 w-full border-b bg-background px-6 py-2">
+    <header className="fixed top-0 z-40 h-14 w-full border-b bg-background px-6 py-2">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           {/* LEFT - Logo */}

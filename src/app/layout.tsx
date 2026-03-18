@@ -21,7 +21,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+  authModal,
+}: Readonly<{ children: React.ReactNode; authModal: React.ReactNode }>) {
   return (
     <html
       className={cn(
@@ -40,7 +41,10 @@ export default function RootLayout({
           disableTransitionOnChange
           enableSystem
         >
-          <TRPCReactProvider>{children}</TRPCReactProvider>
+          <TRPCReactProvider>
+            {children}
+            {authModal}
+          </TRPCReactProvider>
         </ThemeProvider>
       </body>
     </html>
