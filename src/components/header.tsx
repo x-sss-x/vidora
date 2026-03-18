@@ -1,21 +1,28 @@
 "use client";
 
 import {
+  FilmSlateIcon,
   MagnifyingGlassIcon,
   PlusCircleIcon,
+  SignOutIcon,
   YoutubeLogoIcon,
 } from "@phosphor-icons/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { authClient } from "@/server/better-auth/client";
 import type { Session } from "@/server/better-auth/config";
+import appPackage from "../../package.json";
 import {
   InputGroup,
   InputGroupButton,
@@ -24,11 +31,11 @@ import {
 
 interface HeaderProps {
   user?: Session["user"] | null;
-  onLogout?: () => void;
 }
 
-export function Header({ user, onLogout }: HeaderProps) {
+export function Header({ user }: HeaderProps) {
   const [search, setSearch] = useState("");
+  const router = useRouter();
 
   const handleSearch = (e: React.SubmitEvent) => {
     e.preventDefault();
@@ -59,26 +66,25 @@ export function Header({ user, onLogout }: HeaderProps) {
         </div>
 
         {/* CENTER - Search */}
-        <form
-          className="max-w-xl flex-1 items-center gap-2"
-          onSubmit={handleSearch}
-        >
-          <InputGroup className="h-10">
-            <InputGroupInput
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search..."
-              value={search}
-            />
-            <InputGroupButton
-              className={"size-10"}
-              size={"sm"}
-              type="submit"
-              variant={"secondary"}
-            >
-              <MagnifyingGlassIcon />
-            </InputGroupButton>
-          </InputGroup>
-        </form>
+        <div className="flex flex-1 items-center justify-center">
+          <form className="max-w-xl flex-1 gap-2" onSubmit={handleSearch}>
+            <InputGroup className="h-10">
+              <InputGroupInput
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search..."
+                value={search}
+              />
+              <InputGroupButton
+                className={"size-10"}
+                size={"sm"}
+                type="submit"
+                variant={"secondary"}
+              >
+                <MagnifyingGlassIcon />
+              </InputGroupButton>
+            </InputGroup>
+          </form>
+        </div>
 
         {/* RIGHT - Actions */}
         <div className="flex items-center gap-3">
@@ -95,13 +101,49 @@ export function Header({ user, onLogout }: HeaderProps) {
                   </Avatar>
                 </DropdownMenuTrigger>
 
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    className="cursor-pointer"
-                    onClick={onLogout}
-                  >
-                    Logout
-                  </DropdownMenuItem>
+                <DropdownMenuContent align="end" className={"min-w-2xs"}>
+                  <DropdownMenuGroup className={"flex gap-2 p-1.5"}>
+                    <Avatar className="cursor-pointer">
+                      <AvatarImage alt={user.name} src={user.image ?? ""} />
+                      <AvatarFallback>
+                        {user.name.charAt(0) ?? "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="text-xs">
+                      <p className="font-semibold">{user.name}</p>
+                      <p className="text-muted-foreground">{user.email}</p>
+                    </div>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => router.push("/studio")}
+                    >
+                      <FilmSlateIcon /> Studio
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() =>
+                        authClient.signOut({
+                          fetchOptions: {
+                            onSuccess: () => {
+                              router.refresh();
+                            },
+                          },
+                        })
+                      }
+                      variant="destructive"
+                    >
+                      <SignOutIcon /> Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup className={"p-2"}>
+                    <p className="text-center text-[10px] text-muted-foreground">
+                      App version {appPackage.version}
+                    </p>
+                  </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
             </>
