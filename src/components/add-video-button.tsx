@@ -16,6 +16,8 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Spinner } from "./ui/spinner";
+import { authClient } from "@/server/better-auth/client";
+import { useRouter } from "next/navigation";
 
 export function AddVideoButton() {
   const [open, setOpen] = useState(false);
@@ -25,9 +27,20 @@ export function AddVideoButton() {
       enabled: open,
     },
   );
+  const { data: session } = authClient.useSession();
+  const router = useRouter();
 
   return (
-    <Dialog onOpenChange={setOpen} open={open}>
+    <Dialog
+      onOpenChange={(open) => {
+        if (!session) {
+          router.push("/sign-in");
+          return;
+        }
+        setOpen(open);
+      }}
+      open={open}
+    >
       <DialogTrigger
         render={
           <Button className="gap-2" size="sm" variant="outline">

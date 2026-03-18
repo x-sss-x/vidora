@@ -116,7 +116,7 @@ export function Header({ user }: HeaderProps) {
                       className="cursor-pointer"
                       onClick={() => router.push("/studio")}
                     >
-                      <FilmSlateIcon /> Studio
+                      <FilmSlateIcon /> My Studio
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="cursor-pointer"
