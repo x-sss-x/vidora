@@ -3,7 +3,7 @@
 import {
   MagnifyingGlassIcon,
   PlusCircleIcon,
-  VideoIcon,
+  YoutubeLogoIcon,
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useState } from "react";
@@ -45,7 +45,8 @@ export function Header({ user, onLogout }: HeaderProps) {
             className="flex items-center gap-2 font-bold font-mono text-lg"
             href="/"
           >
-            🎬 VIDORA
+            <YoutubeLogoIcon className="size-8 text-primary" weight="duotone" />
+            VIDORA
           </Link>
 
           {/* Add Video */}
