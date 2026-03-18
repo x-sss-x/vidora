@@ -1,24 +1,21 @@
 import { relations } from "drizzle-orm";
 import { boolean, index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { initCols } from "./column.helpers";
 
-export const posts = pgTable(
-  "post",
+export const video = pgTable(
+  "video",
   (d) => ({
-    id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
-    name: d.varchar({ length: 256 }),
+    ...initCols,
+    title: d.varchar({ length: 256 }),
+    description: d.text(),
     createdById: d
       .varchar({ length: 255 })
       .notNull()
-      .references(() => user.id),
-    createdAt: d
-      .timestamp({ withTimezone: true })
-      .$defaultFn(() => new Date())
-      .notNull(),
-    updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
+      .references(() => user.id, { onDelete: "cascade" }),
   }),
   (t) => [
     index("created_by_idx").on(t.createdById),
-    index("name_idx").on(t.name),
+    index("name_idx").on(t.title),
   ],
 );
 
