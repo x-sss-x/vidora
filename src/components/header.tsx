@@ -28,6 +28,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "./ui/input-group";
+import { AddVideoButton } from "./add-video-button";
 
 interface HeaderProps {
   user?: Session["user"] | null;
@@ -57,12 +58,7 @@ export function Header({ user }: HeaderProps) {
           </Link>
 
           {/* Add Video */}
-          <Link href="/admin/upload">
-            <Button className="gap-2" size="sm" variant="outline">
-              <PlusCircleIcon className="h-4 w-4" />
-              Add Video
-            </Button>
-          </Link>
+          <AddVideoButton />
         </div>
 
         {/* CENTER - Search */}
