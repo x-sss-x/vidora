@@ -41,8 +41,11 @@ export function Header({ user, onLogout }: HeaderProps) {
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           {/* LEFT - Logo */}
-          <Link className="flex items-center gap-2 font-bold text-lg" href="/">
-            🎬 Vidora
+          <Link
+            className="flex items-center gap-2 font-bold font-mono text-lg"
+            href="/"
+          >
+            🎬 VIDORA
           </Link>
 
           {/* Add Video */}
