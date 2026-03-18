@@ -11,7 +11,7 @@ export default async function Layout({
   return (
     <section className="flex min-h-svh w-full flex-col py-14">
       <Header user={session?.user} />
-      <main className="px-6 py-4">{children}</main>
+      <main className="p-6">{children}</main>
     </section>
   );
 }

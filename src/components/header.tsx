@@ -30,14 +30,14 @@ interface HeaderProps {
 export function Header({ user, onLogout }: HeaderProps) {
   const [search, setSearch] = useState("");
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: React.SubmitEvent) => {
     e.preventDefault();
     console.log("Search:", search);
     // TODO: route to search page
   };
 
   return (
-    <header className="fixed top-0 h-14 w-full border-b bg-background px-4 py-2">
+    <header className="fixed top-0 h-14 w-full border-b bg-background px-6 py-2">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           {/* LEFT - Logo */}
