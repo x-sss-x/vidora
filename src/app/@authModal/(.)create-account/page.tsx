@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { AuthDialog } from "@/components/auth-dialog";
-import { SignInForm } from "@/components/forms/sign-in";
+import { SignUpForm } from "@/components/forms/sign-up";
 import {
   DialogDescription,
   DialogFooter,
@@ -12,21 +12,19 @@ export default function Page() {
   return (
     <AuthDialog>
       <DialogHeader>
-        <DialogTitle>Sign in to VIDORA</DialogTitle>
-        <DialogDescription>
-          Welcome back! please fill the details to continue
-        </DialogDescription>
+        <DialogTitle>Create an account to be VIDORA</DialogTitle>
+        <DialogDescription>Fill the details to get started</DialogDescription>
       </DialogHeader>
-      <SignInForm />
+      <SignUpForm />
       <DialogFooter className="sm:justify-center">
         <span className="text-center text-muted-foreground text-xs">
-          Don't have an account?{" "}
+          Already have an account?{" "}
           <Link
             className="text-blue-500 hover:text-blue-600"
-            href={"/create-account"}
+            href={"/sign-in"}
             replace
           >
-            Create new account
+            Sign in
           </Link>
         </span>
       </DialogFooter>

@@ -5,6 +5,7 @@ import { Controller, Form, useForm } from "react-hook-form";
 import { z } from "zod/v4";
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -12,26 +13,38 @@ import {
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
-export const signInSchema = z.object({
+export const signUpSchema = z.object({
+  name: z.string().min(2, "Minimum 2 characters required"),
   email: z.email(),
   password: z.string().min(1, "Required"),
 });
 
-export function SignInForm() {
+export function SignUpForm() {
   const form = useForm({
-    resolver: zodResolver(signInSchema),
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  async function onSubmit(values: z.infer<typeof signInSchema>) {}
+  async function onSubmit(values: z.infer<typeof signUpSchema>) {}
 
   return (
     <div className="space-y-4">
       <form id="sign-in-form" onSubmit={form.handleSubmit(onSubmit)}>
         <FieldGroup>
+          <Controller
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <Field>
+                <FieldLabel>Full name</FieldLabel>
+                <Input placeholder="Jhon Wick" {...field} />
+                <FieldError />
+              </Field>
+            )}
+          />
           <Controller
             control={form.control}
             name="email"
@@ -54,6 +67,9 @@ export function SignInForm() {
               <Field>
                 <FieldLabel>Password</FieldLabel>
                 <Input type="password" {...field} />
+                <FieldDescription>
+                  Create a strong password to be secure.
+                </FieldDescription>
                 <FieldError />
               </Field>
             )}
@@ -68,7 +84,7 @@ export function SignInForm() {
           size={"lg"}
           type="submit"
         >
-          Sign in
+          Create
         </Button>
       </Field>
     </div>

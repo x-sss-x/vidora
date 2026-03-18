@@ -110,7 +110,7 @@ export function Header({ user, onLogout }: HeaderProps) {
               <Link href="/sign-in">
                 <Button variant="ghost">Sign In</Button>
               </Link>
-              <Link href="/sign-up">
+              <Link href="/create-account">
                 <Button>Create Account</Button>
               </Link>
             </>

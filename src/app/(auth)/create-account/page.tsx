@@ -1,4 +1,4 @@
-import { SignInForm } from "@/components/forms/sign-in";
+import { SignUpForm } from "@/components/forms/sign-up";
 import {
   Card,
   CardContent,
@@ -12,22 +12,21 @@ export default function Page() {
   return (
     <Card className="min-w-sm">
       <CardHeader>
-        <CardTitle className="text-center">Sign in</CardTitle>
+        <CardTitle className="text-center">
+          Create an account to be VIDORA
+        </CardTitle>
         <CardDescription className="text-center">
-          Welcome back! please fill the details to continue
+          Fill the details to get started
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <SignInForm />
+        <SignUpForm />
       </CardContent>
       <CardFooter className="sm:justify-center">
         <span className="text-center text-muted-foreground text-xs">
-          Don't have an account?{" "}
-          <a
-            className="text-blue-500 hover:text-blue-600"
-            href={"/create-account"}
-          >
-            Create new account
+          Already have an account?{" "}
+          <a className="text-blue-500 hover:text-blue-600" href={"/sign-in"}>
+            Sign in
           </a>
         </span>
       </CardFooter>
