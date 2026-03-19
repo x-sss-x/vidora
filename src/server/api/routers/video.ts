@@ -6,6 +6,7 @@ export const videoRouter = createTRPCRouter({
       new_asset_settings: {
         playback_policy: ["public"],
         video_quality: "basic",
+        passthrough: ctx.session.session.userId,
       },
       cors_origin: "*",
     });

@@ -2,6 +2,16 @@ import { relations } from "drizzle-orm";
 import { boolean, index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { initCols } from "./column.helpers";
 
+export type MuxStatus = "asset_created" | "preparing" | "ready" | "errored";
+
+export type ResolutionTier =
+  | "audio-only"
+  | "720p"
+  | "1080p"
+  | "1440p"
+  | "2160p"
+  | undefined;
+
 export const video = pgTable(
   "video",
   (d) => ({
@@ -12,6 +22,12 @@ export const video = pgTable(
       .varchar({ length: 255 })
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
+    status: d.text().$type<MuxStatus>().notNull(),
+    maxResolutionTier: d.text().$type<ResolutionTier>(),
+    uploadId: d.text().notNull(),
+    assetId: d.text(),
+    duration: d.numeric({ mode: "number" }).default(0),
+    playbackId: d.text(),
   }),
   (t) => [
     index("created_by_idx").on(t.createdById),
