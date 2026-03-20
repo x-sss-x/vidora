@@ -40,6 +40,7 @@ export function RecommendationList() {
 
   return (
     <div className="col-span-4 flex flex-col gap-4">
+      <div className="font-semibold text-lg">Recommended Videos</div>
       {videos?.map((v) => (
         <VideoCard key={v.id} {...v} orientation="horizontal" size="sm" />
       ))}
