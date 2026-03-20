@@ -1,6 +1,5 @@
 "use client";
 
-import { ClockIcon } from "@phosphor-icons/react";
 import { formatDistanceToNowStrict } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
@@ -25,7 +24,7 @@ export function VideoCard({
   orientation = "vertical",
 }: VideoCardProps) {
   return (
-    <Link className="group block" href={`/watch/${id}`}>
+    <Link className="group block" href={`/watch?vid=${id}`}>
       <Card
         className={cn(
           "gap-0 overflow-hidden bg-card/10 p-0 shadow-none transition group-hover:bg-accent",

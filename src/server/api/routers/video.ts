@@ -83,6 +83,34 @@ export const videoRouter = createTRPCRouter({
 			};
 		}),
 
+	getById: publicProcedure
+		.input(z.object({ videoId: z.string().min(1) }))
+		.query(async ({ ctx, input }) => {
+			const video = await ctx.db.query.video.findFirst({
+				where: ({ id }, { eq }) => eq(id, input.videoId),
+				with: {
+					creator: {
+						columns: {
+							id: true,
+							name: true,
+							image: true,
+						},
+					},
+				},
+			});
+
+			if (!video)
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "No resource found!",
+				});
+
+			return {
+				...video,
+				thumbnailUrl: `https://image.mux.com/${video.playbackId}/thumbnail.png?fit_mode=smartcrop&time=35`,
+			};
+		}),
+
 	update: protectedProcedure
 		.input(
 			z.object({
