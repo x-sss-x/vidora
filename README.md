@@ -1,29 +1,51 @@
-# Create T3 App
+# Vidora
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Vidora is a video-sharing web app built with Next.js + tRPC, using Better Auth for authentication, Drizzle ORM for Postgres, and Mux for video hosting/playback.
 
-## What's next? How do I make an app with this?
+## Stack
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+- Next.js (App Router)
+- Bun
+- Better Auth
+- tRPC
+- Drizzle ORM + Postgres
+- Mux (player/uploader)
+- Tailwind CSS + shadcn/ui
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Local setup
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+1. Install prerequisites
+   - `bun`
+   - A running Postgres instance
+     You can use Neon or local script file using ./start-database.
+   - A Mux account (so you can provide `MUX_TOKEN_ID` and `MUX_TOKEN_SECRET`)
 
-## Learn More
+2. Create your environment file
+   - Copy `.env.example` to `.env`
+   - Fill in these required values:
+     - `BETTER_AUTH_SECRET`
+     - `DATABASE_URL` (example format: `postgresql://postgres:password@localhost:5432/vidora`)
+     - `MUX_TOKEN_ID`
+     - `MUX_TOKEN_SECRET`
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+3. Install dependencies
+   - `bun install`
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+4. Create the database tables
+   - `bun db:push`
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+5. Run the dev server
+   - `bun dev`
+   - Open `http://localhost:3000`
 
-## How do I deploy this?
+## Useful commands
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+- `bun dev` - start the development server
+- `bun build` - build for production
+- `bun start` - run the production server
+- `bun db:generate` - generate drizzle artifacts
+- `bun db:migrate` - apply migrations (if you have migration files)
+- `bun db:push` - sync schema to the database
+- `bun db:studio` - open Drizzle Studio
+- `bun check` / `bun check:unsafe` - run Biome checks
+- `bun typecheck` - run `tsc --noEmit`
