@@ -47,6 +47,24 @@ export const videoRouter = createTRPCRouter({
 			}));
 		}),
 
+	recommendationList: publicProcedure
+		.input(z.object({ currentVideoId: z.string().min(1) }))
+		.query(async ({ ctx, input }) => {
+			const videos = await ctx.db.query.video.findMany({
+				orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
+				where: ({ status, id }, { eq, and, not }) =>
+					and(eq(status, "ready"), not(eq(id, input.currentVideoId))),
+				with: {
+					creator: { columns: { id: true, name: true, image: true } },
+				},
+			});
+
+			return videos.map((v) => ({
+				...v,
+				thumbnailUrl: `https://image.mux.com/${v.playbackId}/thumbnail.png?fit_mode=smartcrop&time=35`,
+			}));
+		}),
+
 	listMine: protectedProcedure.query(async ({ ctx }) => {
 		const videos = await ctx.db.query.video.findMany({
 			orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],

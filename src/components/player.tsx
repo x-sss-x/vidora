@@ -5,6 +5,7 @@ import { formatDistanceToNowStrict } from "date-fns";
 import { useSearchParams } from "next/navigation";
 import { api } from "@/trpc/react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Spinner } from "./ui/spinner";
 
 export default function Player() {
   const vid = useSearchParams().get("vid");
@@ -12,17 +13,23 @@ export default function Player() {
   const [video] = api.video.getById.useSuspenseQuery({ videoId: vid! });
 
   return (
-    <div className="col-span-6">
-      {video.playbackId && (
-        <MuxPlayer
-          accentColor="var(--primary)"
-          autoPlay
-          className="aspect-video w-full border"
-          playbackId={video.playbackId}
-          title={video.title}
-          videoTitle={video.title}
-        />
-      )}
+    <div className="col-span-8">
+      <div
+        className={"flex aspect-video h-fit w-full items-center justify-center"}
+      >
+        {video.playbackId ? (
+          <MuxPlayer
+            accentColor="var(--primary)"
+            autoPlay
+            className="aspect-video w-full border"
+            playbackId={video.playbackId}
+            title={video.title}
+            videoTitle={video.title}
+          />
+        ) : (
+          <Spinner className="size-8" />
+        )}
+      </div>
       <div className="space-y-3 py-2">
         <div className="font-semibold text-xl">{video.title}</div>
 

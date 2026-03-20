@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 type VideoCardProps = {
   orientation?: "vertical" | "horizontal";
+  size?: "default" | "sm";
 } & RouterOutputs["video"]["list"][number];
 
 export function VideoCard({
@@ -22,6 +23,7 @@ export function VideoCard({
   creator,
   description,
   orientation = "vertical",
+  size = "default",
 }: VideoCardProps) {
   return (
     <Link className="group block" href={`/watch?vid=${id}`}>
@@ -37,6 +39,7 @@ export function VideoCard({
             "relative h-52 w-full overflow-hidden",
             orientation === "horizontal" && "h-44 min-w-xs max-w-xs border-r",
             orientation === "vertical" && "border-b",
+            size === "sm" && "h-24 min-w-[140px] max-w-[140px]",
           )}
           ratio={16 / 9}
         >
@@ -80,6 +83,7 @@ export function VideoCard({
                   className={cn(
                     "line-clamp-2 max-w-full truncate font-medium text-sm leading-tight",
                     orientation === "horizontal" && "text-lg",
+                    size === "sm" && "text-sm",
                   )}
                 >
                   {title}
