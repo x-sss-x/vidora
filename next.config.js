@@ -7,7 +7,7 @@ import "./src/env.js";
 /** @type {import("next").NextConfig} */
 const config = {
 	images: {
-		remotePatterns: [{ hostname: "picsum.photos" }],
+		remotePatterns: [{ hostname: "image.mux.com" }],
 	},
 };
 

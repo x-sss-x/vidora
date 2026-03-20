@@ -16,7 +16,7 @@ export const video = pgTable(
   "video",
   (d) => ({
     ...initCols,
-    title: d.varchar({ length: 256 }),
+    title: d.varchar({ length: 256 }).notNull(),
     description: d.text(),
     createdById: d
       .varchar({ length: 255 })
@@ -26,7 +26,7 @@ export const video = pgTable(
     maxResolutionTier: d.text().$type<ResolutionTier>(),
     uploadId: d.text().notNull(),
     assetId: d.text(),
-    duration: d.numeric({ mode: "number" }).default(0),
+    duration: d.numeric({ mode: "number", precision: 2 }).default(0).notNull(),
     playbackId: d.text(),
   }),
   (t) => [

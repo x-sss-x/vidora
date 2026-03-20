@@ -18,6 +18,7 @@ import { Spinner } from "./ui/spinner";
 
 export function AddVideoButton() {
   const [open, setOpen] = useState(false);
+  const utils = api.useUtils();
   const { isLoading, data, error } = api.video.getUploadEndpoint.useQuery(
     undefined,
     {
@@ -62,6 +63,9 @@ export function AddVideoButton() {
           <MuxUploader
             className="h-72 bg-accent/40 text-2xl"
             endpoint={data?.uploadUrl}
+            onSuccess={() => {
+              utils.video.list.invalidate();
+            }}
             style={{
               "--progress-bar-fill-color": "var(--primary)",
               "--progress-radial-fill-color": "var(--primary)",

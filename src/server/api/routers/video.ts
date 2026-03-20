@@ -1,4 +1,4 @@
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const videoRouter = createTRPCRouter({
   getUploadEndpoint: protectedProcedure.query(async ({ ctx }) => {
@@ -15,5 +15,17 @@ export const videoRouter = createTRPCRouter({
       uploadUrl: upload.url,
       uploadId: upload.id,
     };
+  }),
+
+  list: publicProcedure.query(async ({ ctx }) => {
+    const videos = await ctx.db.query.video.findMany({
+      orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
+      where: ({ status }, { eq }) => eq(status, "ready"),
+    });
+
+    return videos.map((v) => ({
+      ...v,
+      thumbnailUrl: `https://image.mux.com/${v.playbackId}/thumbnail.png?fit_mode=smartcrop&time=35`,
+    }));
   }),
 });
