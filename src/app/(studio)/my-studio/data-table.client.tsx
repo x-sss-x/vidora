@@ -6,15 +6,15 @@ import { api } from "@/trpc/react";
 import { columns } from "./column";
 
 export function DataTableClient() {
-  const [videos] = api.video.listMine.useSuspenseQuery();
+	const [videos] = api.video.listMine.useSuspenseQuery();
 
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="font-semibold text-lg">Your Videos</div>
-        <AddVideoButton />
-      </div>
-      <DataTable columns={columns} data={videos} />
-    </div>
-  );
+	return (
+		<div className="space-y-4">
+			<div className="flex items-center justify-between">
+				<div className="font-semibold text-lg">Your Videos</div>
+				<AddVideoButton />
+			</div>
+			<DataTable columns={columns} data={videos} />
+		</div>
+	);
 }

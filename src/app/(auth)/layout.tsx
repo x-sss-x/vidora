@@ -4,24 +4,24 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/server/better-auth/server";
 
 export default async function Layout({
-  children,
+	children,
 }: {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }) {
-  const session = await getSession();
+	const session = await getSession();
 
-  if (session) redirect("/");
+	if (session) redirect("/");
 
-  return (
-    <section className="flex h-svh min-h-svh flex-col items-center justify-center gap-6">
-      <Link
-        className="flex items-center gap-2 font-bold font-mono text-lg"
-        href="/"
-      >
-        <YoutubeLogoIcon className="size-8 text-primary" weight="duotone" />
-        VIDORA
-      </Link>
-      {children}
-    </section>
-  );
+	return (
+		<section className="flex h-svh min-h-svh flex-col items-center justify-center gap-6">
+			<Link
+				className="flex items-center gap-2 font-bold font-mono text-lg"
+				href="/"
+			>
+				<YoutubeLogoIcon className="size-8 text-primary" weight="duotone" />
+				VIDORA
+			</Link>
+			{children}
+		</section>
+	);
 }
