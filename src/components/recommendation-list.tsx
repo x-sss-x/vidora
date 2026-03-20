@@ -19,7 +19,7 @@ export function RecommendationList() {
       <div className="col-span-4 flex flex-col gap-4">
         {Array.from({ length: 20 }).map((_, i) => (
           // biome-ignore lint/suspicious/noArrayIndexKey: <Just for this>
-          <Skeleton className="h-24 w-full" key={i + 1} />
+          <Skeleton className="h-20 w-full" key={i + 1} />
         ))}
       </div>
     );

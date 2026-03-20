@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  CircleHalfTiltIcon,
   FilmSlateIcon,
   MagnifyingGlassIcon,
   SignOutIcon,
@@ -8,6 +9,7 @@ import {
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTheme } from "next-themes";
 import { useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -16,7 +18,12 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/server/better-auth/client";
@@ -39,6 +46,7 @@ export function Header({ user, variant = "default" }: HeaderProps) {
   const [search, setSearch] = useState(q ?? "");
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const { setTheme, theme } = useTheme();
 
   const handleSearch = (e: React.SubmitEvent) => {
     e.preventDefault();
@@ -138,9 +146,31 @@ export function Header({ user, variant = "default" }: HeaderProps) {
                         className="cursor-pointer"
                         onClick={() => router.push("/my-studio")}
                       >
-                        <FilmSlateIcon /> VIDORA STUDIO
+                        <FilmSlateIcon /> My Studio
                       </DropdownMenuItem>
                     )}
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger render={<DropdownMenuItem />}>
+                        <CircleHalfTiltIcon />
+                        Theme
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuRadioGroup
+                          onValueChange={(v) => setTheme(v)}
+                          value={theme}
+                        >
+                          <DropdownMenuRadioItem value={"system"}>
+                            System
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value={"dark"}>
+                            Dark
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value={"light"}>
+                            Light
+                          </DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
                     <DropdownMenuItem
                       className="cursor-pointer"
                       onClick={() =>

@@ -39,7 +39,7 @@ export function VideoCard({
             "relative h-52 w-full overflow-hidden",
             orientation === "horizontal" && "h-44 min-w-xs max-w-xs border-r",
             orientation === "vertical" && "border-b",
-            size === "sm" && "h-24 min-w-[140px] max-w-[140px]",
+            size === "sm" && "h-20 min-w-[140px] max-w-[140px]",
           )}
           ratio={16 / 9}
         >
@@ -99,7 +99,7 @@ export function VideoCard({
               </div>
             </div>
 
-            {description && orientation === "horizontal" && (
+            {description && orientation === "horizontal" && size !== "sm" && (
               <p className="truncate text-muted-foreground text-xs">
                 {description}
               </p>
