@@ -92,4 +92,51 @@ export const videoRouter = createTRPCRouter({
 
 			return updatedVideo[0];
 		}),
+
+	delete: protectedProcedure
+		.input(
+			z.object({
+				videoId: z.string().min(1),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			const singleVideo = await ctx.db.query.video.findFirst({
+				where: ({ createdById, id }, { eq, and }) =>
+					and(
+						eq(createdById, ctx.session.session.userId),
+						eq(id, input.videoId),
+					),
+			});
+
+			if (!singleVideo)
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Couldn't able to find the video to delete it!",
+				});
+
+			if (singleVideo.assetId) {
+				try {
+					await ctx.mux.video.assets.delete(singleVideo.assetId);
+				} catch (e) {
+					console.error(e);
+					throw new TRPCError({
+						code: "INTERNAL_SERVER_ERROR",
+						message: "Couldn't able to delete the video in the MUX!",
+					});
+				}
+			}
+
+			const deletedVideo = await ctx.db
+				.delete(video)
+				.where(eq(video.id, input.videoId))
+				.returning();
+
+			if (!deletedVideo[0])
+				throw new TRPCError({
+					code: "INTERNAL_SERVER_ERROR",
+					message: "Couldn't able to delete the video!",
+				});
+
+			return deletedVideo[0];
+		}),
 });
