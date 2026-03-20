@@ -5,6 +5,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNowStrict } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { DeleteVideoDialog } from "@/components/delete-video-dialog";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
@@ -103,47 +104,48 @@ export const columns: ColumnDef<Video>[] = [
 
       return (
         <div className="pr-6 text-right">
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button size={"icon"} variant={"outline"}>
-                  <DotsThreeIcon />
-                </Button>
-              }
-            />
-            <DropdownMenuContent>
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-
-                <DropdownMenuItem
-                  render={
-                    <Link href={`/my-studio/v/${row.uploadId}`}>
-                      <PenNibIcon />
-                      Edit Video
-                    </Link>
-                  }
-                />
-
-                <DeleteVideoDialog
-                  render={
-                    <DropdownMenuItem
-                      onSelect={(e) => {
-                        e.preventDefault();
-                      }}
-                      variant="destructive"
-                    >
-                      <TrashIcon />
-                      Remove
-                    </DropdownMenuItem>
-                  }
-                  videoId={row.id}
-                />
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <VideoMoreActionsDropdownMenu {...row} />
         </div>
       );
     },
   },
 ];
+
+function VideoMoreActionsDropdownMenu({ id, uploadId }: Video) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <Button size={"icon"} variant={"outline"}>
+            <DotsThreeIcon />
+          </Button>
+        }
+      />
+      <DropdownMenuContent>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem
+            render={
+              <Link href={`/my-studio/v/${uploadId}`}>
+                <PenNibIcon />
+                Edit Video
+              </Link>
+            }
+          />
+
+          <DropdownMenuItem onClick={() => setOpen(true)} variant="destructive">
+            <TrashIcon /> Delete
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+      <DeleteVideoDialog
+        alertDialogProps={{ open, onOpenChange: setOpen }}
+        videoId={id}
+      />
+    </DropdownMenu>
+  );
+}

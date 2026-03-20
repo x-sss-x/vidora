@@ -121,12 +121,14 @@ export function ClientPage() {
             )}
           </Button>
           <DeleteVideoDialog
+            alertDialogTriggerProps={{
+              render: (
+                <Button size={"lg"} type="button" variant={"destructive"}>
+                  Delete Video
+                </Button>
+              ),
+            }}
             callbackURL="/my-studio"
-            render={
-              <Button size={"lg"} type="button" variant={"destructive"}>
-                Delete Video
-              </Button>
-            }
             videoId={video.id}
           />
         </Field>
