@@ -21,17 +21,28 @@ export const videoRouter = createTRPCRouter({
 		};
 	}),
 
-	list: publicProcedure.query(async ({ ctx }) => {
-		const videos = await ctx.db.query.video.findMany({
-			orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
-			where: ({ status }, { eq }) => eq(status, "ready"),
-		});
+	list: publicProcedure
+		.input(z.object({ q: z.string().min(1).optional().nullable() }).optional())
+		.query(async ({ ctx, input }) => {
+			const videos = await ctx.db.query.video.findMany({
+				orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
+				where: ({ status, title, description }, { eq, and, or, ilike }) =>
+					and(
+						eq(status, "ready"),
+						input?.q
+							? or(
+									ilike(title, `%${input.q}%`),
+									ilike(description, `%${input.q}%`),
+								)
+							: undefined,
+					),
+			});
 
-		return videos.map((v) => ({
-			...v,
-			thumbnailUrl: `https://image.mux.com/${v.playbackId}/thumbnail.png?fit_mode=smartcrop&time=35`,
-		}));
-	}),
+			return videos.map((v) => ({
+				...v,
+				thumbnailUrl: `https://image.mux.com/${v.playbackId}/thumbnail.png?fit_mode=smartcrop&time=35`,
+			}));
+		}),
 
 	listMine: protectedProcedure.query(async ({ ctx }) => {
 		const videos = await ctx.db.query.video.findMany({

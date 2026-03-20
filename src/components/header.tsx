@@ -7,8 +7,8 @@ import {
   YoutubeLogoIcon,
 } from "@phosphor-icons/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,13 +35,19 @@ interface HeaderProps {
 }
 
 export function Header({ user, variant = "default" }: HeaderProps) {
-  const [search, setSearch] = useState("");
+  const q = useSearchParams().get("q");
+  const [search, setSearch] = useState(q ?? "");
   const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSearch = (e: React.SubmitEvent) => {
     e.preventDefault();
-    console.log("Search:", search);
-    // TODO: route to search page
+    inputRef.current?.blur();
+    if (!search) {
+      router.push("/");
+      return;
+    }
+    router.push(`/results?q=${search}`);
   };
 
   return (
@@ -72,10 +78,12 @@ export function Header({ user, variant = "default" }: HeaderProps) {
               <InputGroupInput
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search VIDORA ..."
+                ref={inputRef}
                 value={search}
               />
               <InputGroupButton
                 className={"size-10"}
+                disabled={!search}
                 size={"sm"}
                 type="submit"
                 variant={"secondary"}
