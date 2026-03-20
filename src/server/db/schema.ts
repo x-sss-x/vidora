@@ -35,6 +35,10 @@ export const video = pgTable(
 	],
 );
 
+export const videoRelations = relations(video, ({ one }) => ({
+	creator: one(user, { fields: [video.createdById], references: [user.id] }),
+}));
+
 export const user = pgTable("user", {
 	id: text("id").primaryKey(),
 	name: text("name").notNull(),

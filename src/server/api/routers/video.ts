@@ -36,6 +36,9 @@ export const videoRouter = createTRPCRouter({
 								)
 							: undefined,
 					),
+				with: {
+					creator: { columns: { id: true, name: true, image: true } },
+				},
 			});
 
 			return videos.map((v) => ({

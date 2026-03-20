@@ -41,14 +41,7 @@ export function VideosList() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {videos.map((v) => (
-        <VideoCard
-          createdAt={v.createdAt}
-          duration={v.duration}
-          id={v.id}
-          key={v.id}
-          thumbnailUrl={v.thumbnailUrl}
-          title={v.title}
-        />
+        <VideoCard key={v.id} {...v} />
       ))}
     </div>
   );

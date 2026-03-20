@@ -6,16 +6,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn, formatTime } from "@/lib/utils";
+import type { RouterOutputs } from "@/trpc/react";
 import { AspectRatio } from "./ui/aspect-ratio";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
-interface VideoCardProps {
-  id: string;
-  title: string;
-  thumbnailUrl: string;
-  createdAt: Date | string;
-  duration: number;
+type VideoCardProps = {
   orientation?: "vertical" | "horizontal";
-}
+} & RouterOutputs["video"]["list"][number];
 
 export function VideoCard({
   id,
@@ -23,13 +20,15 @@ export function VideoCard({
   thumbnailUrl,
   createdAt,
   duration,
+  creator,
+  description,
   orientation = "vertical",
 }: VideoCardProps) {
   return (
     <Link className="group block" href={`/watch/${id}`}>
       <Card
         className={cn(
-          "overflow-hidden bg-card/10 p-0 shadow-none transition group-hover:bg-accent",
+          "gap-0 overflow-hidden bg-card/10 p-0 shadow-none transition group-hover:bg-accent",
           orientation === "horizontal" && "flex-row",
         )}
       >
@@ -37,7 +36,8 @@ export function VideoCard({
         <AspectRatio
           className={cn(
             "relative h-52 w-full overflow-hidden",
-            orientation === "horizontal" && "h-44 max-w-xs",
+            orientation === "horizontal" && "h-44 min-w-xs max-w-xs border-r",
+            orientation === "vertical" && "border-b",
           )}
           ratio={16 / 9}
         >
@@ -61,27 +61,46 @@ export function VideoCard({
         {/* Content */}
         <CardContent
           className={cn(
-            "px-3 pb-4",
-            orientation === "horizontal" && "px-0 py-2",
+            "p-3",
+            orientation === "horizontal" && "flex-1 truncate pr-6",
           )}
         >
-          <div className="space-y-1">
-            {/* Title */}
-            <h3
-              className={cn(
-                "line-clamp-2 font-medium text-sm leading-tight",
-                orientation === "horizontal" && "text-lg",
-              )}
-            >
-              {title}
-            </h3>
+          <div className="space-y-4">
+            <div className="flex gap-3">
+              <Avatar className={cn(orientation === "horizontal" && "hidden")}>
+                <AvatarImage src={creator.image ?? ""} />
+                <AvatarFallback className={"text-xs"}>
+                  {creator.name.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
 
-            {/* Meta */}
-            <div className="flex items-center gap-1 text-muted-foreground text-xs">
-              <span suppressHydrationWarning>
-                {formatDistanceToNowStrict(createdAt, { addSuffix: true })}
-              </span>
+              {/** Title & Timestamp */}
+              <div className="space-y-0.5 overflow-hidden">
+                {/* Title */}
+                <h3
+                  className={cn(
+                    "line-clamp-2 max-w-full truncate font-medium text-sm leading-tight",
+                    orientation === "horizontal" && "text-lg",
+                  )}
+                >
+                  {title}
+                </h3>
+
+                <p className="text-muted-foreground text-xs">
+                  <strong>{creator.name}</strong>
+                  {" · "}
+                  <span suppressHydrationWarning>
+                    {formatDistanceToNowStrict(createdAt, { addSuffix: true })}
+                  </span>
+                </p>
+              </div>
             </div>
+
+            {description && orientation === "horizontal" && (
+              <p className="truncate text-muted-foreground text-xs">
+                {description}
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
