@@ -69,6 +69,7 @@ export function AddVideoButton({ onlyIcon }: { onlyIcon?: boolean }) {
             endpoint={data?.uploadUrl}
             onSuccess={async () => {
               await utils.video.listMine.invalidate();
+              router.push(`/my-studio/v/${data?.uploadId}`);
               setOpen(false);
             }}
             style={{

@@ -61,40 +61,49 @@ export function SignUpForm() {
           <Controller
             control={form.control}
             name="name"
-            render={({ field }) => (
-              <Field>
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
                 <FieldLabel>Full name</FieldLabel>
-                <Input placeholder="Jhon Wick" {...field} />
-                <FieldError />
+                <Input
+                  aria-invalid={fieldState.invalid}
+                  placeholder="Jhon Wick"
+                  {...field}
+                />
+                <FieldError errors={[fieldState.error]} />
               </Field>
             )}
           />
           <Controller
             control={form.control}
             name="email"
-            render={({ field }) => (
-              <Field>
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
                 <FieldLabel>Email address</FieldLabel>
                 <Input
+                  aria-invalid={fieldState.invalid}
                   placeholder="youremail@domain.com"
                   type="email"
                   {...field}
                 />
-                <FieldError />
+                <FieldError errors={[fieldState.error]} />
               </Field>
             )}
           />
           <Controller
             control={form.control}
             name="password"
-            render={({ field }) => (
-              <Field>
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
                 <FieldLabel>Password</FieldLabel>
-                <Input type="password" {...field} />
+                <Input
+                  aria-invalid={fieldState.invalid}
+                  type="password"
+                  {...field}
+                />
                 <FieldDescription>
                   Create a strong password to be secure.
                 </FieldDescription>
-                <FieldError />
+                <FieldError errors={[fieldState.error]} />
               </Field>
             )}
           />

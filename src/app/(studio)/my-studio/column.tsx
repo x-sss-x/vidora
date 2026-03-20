@@ -4,6 +4,7 @@ import { DotsThreeIcon, PenNibIcon, TrashIcon } from "@phosphor-icons/react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNowStrict } from "date-fns";
 import Image from "next/image";
+import Link from "next/link";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -38,11 +39,23 @@ export const columns: ColumnDef<Video>[] = [
               src={row.thumbnailUrl}
             />
           </AspectRatio>
-          <div className="space-y-2 px-2.5 py-1">
-            <div className="font-semibold text-xs">{row.title}</div>
+          <div className="flex flex-col gap-2 px-2.5 py-1">
+            <Link href={`/my-studio/v/${row.uploadId}`}>
+              <div className="font-medium text-foreground/80 text-sm hover:text-foreground hover:underline">
+                {row.title}
+              </div>
+            </Link>
             <p className="text-muted-foreground text-xs">
-              Created{" "}
-              {formatDistanceToNowStrict(row.createdAt, { addSuffix: true })}
+              Uploaded{" "}
+              {formatDistanceToNowStrict(row.createdAt, { addSuffix: true })}{" "}
+              {row.updatedAt && (
+                <>
+                  · Last updated{" "}
+                  {formatDistanceToNowStrict(row.updatedAt, {
+                    addSuffix: true,
+                  })}
+                </>
+              )}
             </p>
           </div>
         </div>
@@ -81,7 +94,9 @@ export const columns: ColumnDef<Video>[] = [
   {
     accessorKey: "actions",
     header: () => <div className="pr-6 text-right">Actions</div>,
-    cell() {
+    cell(props) {
+      const row = props.row.original;
+
       return (
         <div className="pr-6 text-right">
           <DropdownMenu>
@@ -96,10 +111,16 @@ export const columns: ColumnDef<Video>[] = [
               <DropdownMenuGroup>
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <PenNibIcon />
-                  Edit Video
-                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  render={
+                    <Link href={`/my-studio/v/${row.uploadId}`}>
+                      <PenNibIcon />
+                      Edit Video
+                    </Link>
+                  }
+                />
+
                 <DropdownMenuItem variant="destructive">
                   <TrashIcon />
                   Remove

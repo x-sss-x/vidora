@@ -57,26 +57,31 @@ export function SignInForm() {
           <Controller
             control={form.control}
             name="email"
-            render={({ field }) => (
-              <Field>
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
                 <FieldLabel>Email address</FieldLabel>
                 <Input
+                  aria-invalid={fieldState.invalid}
                   placeholder="youremail@domain.com"
                   type="email"
                   {...field}
                 />
-                <FieldError />
+                <FieldError errors={[fieldState.error]} />
               </Field>
             )}
           />
           <Controller
             control={form.control}
             name="password"
-            render={({ field }) => (
-              <Field>
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
                 <FieldLabel>Password</FieldLabel>
-                <Input type="password" {...field} />
-                <FieldError />
+                <Input
+                  aria-invalid={fieldState.invalid}
+                  type="password"
+                  {...field}
+                />
+                <FieldError errors={[fieldState.error]} />
               </Field>
             )}
           />
