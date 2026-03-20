@@ -55,9 +55,6 @@ export function Header({ user }: HeaderProps) {
             <YoutubeLogoIcon className="size-8 text-primary" weight="duotone" />
             VIDORA
           </Link>
-
-          {/* Add Video */}
-          <AddVideoButton />
         </div>
 
         {/* CENTER - Search */}
@@ -83,6 +80,8 @@ export function Header({ user }: HeaderProps) {
 
         {/* RIGHT - Actions */}
         <div className="flex items-center gap-3">
+          {/* Add Video */}
+          <AddVideoButton />
           {user ? (
             <>
               {/* Avatar Dropdown */}

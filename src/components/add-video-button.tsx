@@ -16,9 +16,8 @@ import {
 } from "./ui/dialog";
 import { Spinner } from "./ui/spinner";
 
-export function AddVideoButton() {
+export function AddVideoButton({ onlyIcon }: { onlyIcon?: boolean }) {
   const [open, setOpen] = useState(false);
-  const utils = api.useUtils();
   const { isLoading, data, error } = api.video.getUploadEndpoint.useQuery(
     undefined,
     {
@@ -41,9 +40,13 @@ export function AddVideoButton() {
     >
       <DialogTrigger
         render={
-          <Button className="gap-2" size="sm" variant="outline">
+          <Button
+            className="gap-2"
+            size={onlyIcon ? "icon" : "default"}
+            variant="outline"
+          >
             <PlusCircleIcon className="h-4 w-4" />
-            Add Video
+            {!onlyIcon && "Add Video"}
           </Button>
         }
       />
@@ -63,8 +66,8 @@ export function AddVideoButton() {
           <MuxUploader
             className="h-72 bg-accent/40 text-2xl"
             endpoint={data?.uploadUrl}
-            onSuccess={() => {
-              utils.video.list.invalidate();
+            onSuccess={async () => {
+              setOpen(false);
             }}
             style={{
               "--progress-bar-fill-color": "var(--primary)",

@@ -59,7 +59,7 @@ export function VideoCard({
             {/* Meta */}
             <div className="flex items-center gap-1 text-muted-foreground text-xs">
               <ClockIcon size={12} />
-              <span>
+              <span suppressHydrationWarning>
                 {formatDistanceToNowStrict(createdAt, { addSuffix: true })}
               </span>
             </div>
