@@ -31,9 +31,10 @@ import {
 
 interface HeaderProps {
   user?: Session["user"] | null;
+  variant?: "studio" | "default";
 }
 
-export function Header({ user }: HeaderProps) {
+export function Header({ user, variant = "default" }: HeaderProps) {
   const [search, setSearch] = useState("");
   const router = useRouter();
 
@@ -50,10 +51,17 @@ export function Header({ user }: HeaderProps) {
           {/* LEFT - Logo */}
           <Link
             className="flex items-center gap-2 font-bold font-mono text-lg"
-            href="/"
+            href={variant === "studio" ? "/my-studio" : "/"}
           >
-            <YoutubeLogoIcon className="size-8 text-primary" weight="duotone" />
-            VIDORA
+            {variant === "studio" ? (
+              <FilmSlateIcon className="size-8 text-primary" weight="duotone" />
+            ) : (
+              <YoutubeLogoIcon
+                className="size-8 text-primary"
+                weight="duotone"
+              />
+            )}
+            {variant === "studio" ? "VIDORA·STUDIO" : "VIDORA"}
           </Link>
         </div>
 
@@ -63,7 +71,7 @@ export function Header({ user }: HeaderProps) {
             <InputGroup className="h-10">
               <InputGroupInput
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search..."
+                placeholder="Search VIDORA ..."
                 value={search}
               />
               <InputGroupButton
@@ -81,7 +89,7 @@ export function Header({ user }: HeaderProps) {
         {/* RIGHT - Actions */}
         <div className="flex items-center gap-3">
           {/* Add Video */}
-          <AddVideoButton />
+          {variant === "default" && <AddVideoButton />}
           {user ? (
             <>
               {/* Avatar Dropdown */}
@@ -110,12 +118,21 @@ export function Header({ user }: HeaderProps) {
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem
-                      className="cursor-pointer"
-                      onClick={() => router.push("/studio")}
-                    >
-                      <FilmSlateIcon /> My Studio
-                    </DropdownMenuItem>
+                    {variant === "studio" ? (
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={() => router.push("/")}
+                      >
+                        <YoutubeLogoIcon /> VIDORA
+                      </DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={() => router.push("/my-studio")}
+                      >
+                        <FilmSlateIcon /> VIDORA STUDIO
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem
                       className="cursor-pointer"
                       onClick={() =>

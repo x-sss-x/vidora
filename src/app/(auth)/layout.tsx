@@ -13,7 +13,7 @@ export default async function Layout({
   if (session) redirect("/");
 
   return (
-    <section className="flex h-svh flex-col items-center justify-center gap-6 bg-background">
+    <section className="flex h-svh min-h-svh flex-col items-center justify-center gap-6">
       <Link
         className="flex items-center gap-2 font-bold font-mono text-lg"
         href="/"

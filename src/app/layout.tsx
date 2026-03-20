@@ -28,7 +28,7 @@ export default function RootLayout({
       className={cn(
         "bg-background font-mono",
         jetbrainsMono.variable,
-        "light font-sans",
+        "font-sans",
         inter.variable,
       )}
       lang="en"

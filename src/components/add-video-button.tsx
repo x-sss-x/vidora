@@ -26,6 +26,7 @@ export function AddVideoButton({ onlyIcon }: { onlyIcon?: boolean }) {
   );
   const { data: session } = authClient.useSession();
   const router = useRouter();
+  const utils = api.useUtils();
 
   return (
     <Dialog
@@ -67,6 +68,7 @@ export function AddVideoButton({ onlyIcon }: { onlyIcon?: boolean }) {
             className="h-72 bg-accent/40 text-2xl"
             endpoint={data?.uploadUrl}
             onSuccess={async () => {
+              await utils.video.listMine.invalidate();
               setOpen(false);
             }}
             style={{

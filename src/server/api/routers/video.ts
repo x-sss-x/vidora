@@ -1,3 +1,4 @@
+import { inArray } from "drizzle-orm";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const videoRouter = createTRPCRouter({
@@ -21,6 +22,19 @@ export const videoRouter = createTRPCRouter({
     const videos = await ctx.db.query.video.findMany({
       orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
       where: ({ status }, { eq }) => eq(status, "ready"),
+    });
+
+    return videos.map((v) => ({
+      ...v,
+      thumbnailUrl: `https://image.mux.com/${v.playbackId}/thumbnail.png?fit_mode=smartcrop&time=35`,
+    }));
+  }),
+
+  listMine: protectedProcedure.query(async ({ ctx }) => {
+    const videos = await ctx.db.query.video.findMany({
+      orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
+      where: ({ createdById }, { eq }) =>
+        eq(createdById, ctx.session.session.userId),
     });
 
     return videos.map((v) => ({
