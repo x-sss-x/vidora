@@ -2,11 +2,11 @@ import "@/styles/globals.css";
 
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import { TRPCReactProvider } from "@/trpc/react";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -48,6 +48,9 @@ export default function RootLayout({
               <Toaster richColors />
               {children}
               {authModal}
+              <footer className="flex h-14 items-center justify-center text-muted-foreground">
+                Built by Shreesha & Team
+              </footer>
             </TRPCReactProvider>
           </ThemeProvider>
         </NuqsAdapter>

@@ -1,9 +1,16 @@
 "use client";
 
+import { FilmSlateIcon } from "@phosphor-icons/react";
 import { isEmpty } from "lodash";
 import { useSearchParams } from "next/navigation";
 import { api } from "@/trpc/react";
-import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "./ui/empty";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "./ui/empty";
 import { Skeleton } from "./ui/skeleton";
 import { VideoCard } from "./video-card";
 
@@ -26,9 +33,12 @@ export function RecommendationList() {
 
   if (isEmpty(videos))
     return (
-      <div>
+      <div className="col-span-4 flex flex-col gap-4">
         <Empty>
           <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <FilmSlateIcon className="size-6" weight="duotone" />
+            </EmptyMedia>
             <EmptyTitle>No Recommended Videos</EmptyTitle>
             <EmptyDescription>
               There are not much content we could recommend to you
