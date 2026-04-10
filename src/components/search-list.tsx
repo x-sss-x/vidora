@@ -11,7 +11,7 @@ export function SearchList() {
   return (
     <div className="flex flex-col gap-4">
       {videos.map((v) => (
-        <VideoCard key={v.id} {...v} orientation="horizontal" />
+        <VideoCard key={v.id} {...v} orientation="horizontal" showWatchListButton />
       ))}
     </div>
   );

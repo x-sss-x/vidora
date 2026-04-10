@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  BookmarkSimpleIcon,
   CircleHalfTiltIcon,
   FilmSlateIcon,
   MagnifyingGlassIcon,
@@ -142,12 +143,20 @@ export function Header({ user, variant = "default" }: HeaderProps) {
                         <YoutubeLogoIcon /> VIDORA
                       </DropdownMenuItem>
                     ) : (
-                      <DropdownMenuItem
-                        className="cursor-pointer"
-                        onClick={() => router.push("/my-studio")}
-                      >
-                        <FilmSlateIcon /> My Studio
-                      </DropdownMenuItem>
+                      <>
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onClick={() => router.push("/my-studio")}
+                        >
+                          <FilmSlateIcon /> My Studio
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onClick={() => router.push("/watch-list")}
+                        >
+                          <BookmarkSimpleIcon /> Watch List
+                        </DropdownMenuItem>
+                      </>
                     )}
                     <DropdownMenuSub>
                       <DropdownMenuSubTrigger render={<DropdownMenuItem />}>

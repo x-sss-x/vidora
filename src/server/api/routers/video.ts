@@ -1,8 +1,11 @@
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod/v4";
-import { video } from "@/server/db/schema";
+import { video, watchList } from "@/server/db/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+
+const getThumbnailUrl = (playbackId: string | null) =>
+	`https://image.mux.com/${playbackId}/thumbnail.png?fit_mode=smartcrop&time=35`;
 
 export const videoRouter = createTRPCRouter({
 	getUploadEndpoint: protectedProcedure.query(async ({ ctx }) => {
@@ -41,9 +44,32 @@ export const videoRouter = createTRPCRouter({
 				},
 			});
 
+			const currentUserId = ctx.session?.session?.userId;
+			if (!currentUserId) {
+				return videos.map((v) => ({
+					...v,
+					isInWatchList: false,
+					thumbnailUrl: getThumbnailUrl(v.playbackId),
+				}));
+			}
+
+			const savedVideos = await ctx.db.query.watchList.findMany({
+				columns: { videoId: true },
+				where: ({ userId, videoId }, { eq, and, inArray }) =>
+					and(
+						eq(userId, currentUserId),
+						inArray(
+							videoId,
+							videos.map((v) => v.id),
+						),
+					),
+			});
+			const savedVideoIds = new Set(savedVideos.map((v) => v.videoId));
+
 			return videos.map((v) => ({
 				...v,
-				thumbnailUrl: `https://image.mux.com/${v.playbackId}/thumbnail.png?fit_mode=smartcrop&time=35`,
+				isInWatchList: savedVideoIds.has(v.id),
+				thumbnailUrl: getThumbnailUrl(v.playbackId),
 			}));
 		}),
 
@@ -59,9 +85,32 @@ export const videoRouter = createTRPCRouter({
 				},
 			});
 
+			const currentUserId = ctx.session?.session?.userId;
+			if (!currentUserId) {
+				return videos.map((v) => ({
+					...v,
+					isInWatchList: false,
+					thumbnailUrl: getThumbnailUrl(v.playbackId),
+				}));
+			}
+
+			const savedVideos = await ctx.db.query.watchList.findMany({
+				columns: { videoId: true },
+				where: ({ userId, videoId }, { eq, and, inArray }) =>
+					and(
+						eq(userId, currentUserId),
+						inArray(
+							videoId,
+							videos.map((v) => v.id),
+						),
+					),
+			});
+			const savedVideoIds = new Set(savedVideos.map((v) => v.videoId));
+
 			return videos.map((v) => ({
 				...v,
-				thumbnailUrl: `https://image.mux.com/${v.playbackId}/thumbnail.png?fit_mode=smartcrop&time=35`,
+				isInWatchList: savedVideoIds.has(v.id),
+				thumbnailUrl: getThumbnailUrl(v.playbackId),
 			}));
 		}),
 
@@ -74,8 +123,31 @@ export const videoRouter = createTRPCRouter({
 
 		return videos.map((v) => ({
 			...v,
-			thumbnailUrl: `https://image.mux.com/${v.playbackId}/thumbnail.png?fit_mode=smartcrop&time=35`,
+			thumbnailUrl: getThumbnailUrl(v.playbackId),
 		}));
+	}),
+
+	listWatchList: protectedProcedure.query(async ({ ctx }) => {
+		const savedVideos = await ctx.db.query.watchList.findMany({
+			orderBy: ({ createdAt }, { desc }) => [desc(createdAt)],
+			where: ({ userId }, { eq }) => eq(userId, ctx.session.session.userId),
+			with: {
+				video: {
+					with: {
+						creator: { columns: { id: true, name: true, image: true } },
+					},
+				},
+			},
+		});
+
+		return savedVideos
+			.map((entry) => entry.video)
+			.filter((v) => v.status === "ready")
+			.map((v) => ({
+				...v,
+				isInWatchList: true,
+				thumbnailUrl: getThumbnailUrl(v.playbackId),
+			}));
 	}),
 
 	getByUploadId: protectedProcedure
@@ -97,7 +169,7 @@ export const videoRouter = createTRPCRouter({
 
 			return {
 				...video,
-				thumbnailUrl: `https://image.mux.com/${video.playbackId}/thumbnail.png?fit_mode=smartcrop&time=35`,
+				thumbnailUrl: getThumbnailUrl(video.playbackId),
 			};
 		}),
 
@@ -123,9 +195,18 @@ export const videoRouter = createTRPCRouter({
 					message: "No resource found!",
 				});
 
+			const currentUserId = ctx.session?.session?.userId;
+			const saved = currentUserId
+				? await ctx.db.query.watchList.findFirst({
+						where: ({ userId, videoId }, { and, eq }) =>
+							and(eq(userId, currentUserId), eq(videoId, video.id)),
+					})
+				: null;
+
 			return {
 				...video,
-				thumbnailUrl: `https://image.mux.com/${video.playbackId}/thumbnail.png?fit_mode=smartcrop&time=35`,
+				isInWatchList: Boolean(saved),
+				thumbnailUrl: getThumbnailUrl(video.playbackId),
 			};
 		}),
 
@@ -153,12 +234,65 @@ export const videoRouter = createTRPCRouter({
 			return updatedVideo[0];
 		}),
 
-	delete: protectedProcedure
+	addToWatchList: protectedProcedure
 		.input(
 			z.object({
 				videoId: z.string().min(1),
 			}),
 		)
+		.mutation(async ({ ctx, input }) => {
+			const singleVideo = await ctx.db.query.video.findFirst({
+				where: ({ id, status }, { eq, and }) =>
+					and(eq(id, input.videoId), eq(status, "ready")),
+			});
+
+			if (!singleVideo)
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Couldn't find this video.",
+				});
+
+			await ctx.db
+				.insert(watchList)
+				.values({
+					userId: ctx.session.session.userId,
+					videoId: input.videoId,
+				})
+				.onConflictDoNothing();
+
+			return { success: true };
+		}),
+
+	removeFromWatchList: protectedProcedure
+		.input(
+			z.object({
+				videoId: z.string().min(1),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			const singleVideo = await ctx.db.query.video.findFirst({
+				where: ({ id, status }, { eq, and }) =>
+					and(eq(id, input.videoId), eq(status, "ready")),
+			});
+
+			if (!singleVideo)
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Couldn't find this video.",
+				});
+
+			await ctx.db
+				.delete(watchList)
+				.where(
+					and(
+						eq(watchList.videoId, input.videoId),
+						eq(watchList.userId, ctx.session.session.userId),
+					),
+				);
+		}),
+
+	delete: protectedProcedure
+		.input(z.object({ videoId: z.string().min(1) }))
 		.mutation(async ({ ctx, input }) => {
 			const singleVideo = await ctx.db.query.video.findFirst({
 				where: ({ createdById, id }, { eq, and }) =>

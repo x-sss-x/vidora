@@ -1,5 +1,12 @@
 import { relations } from "drizzle-orm";
-import { boolean, index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import {
+	boolean,
+	index,
+	pgTable,
+	primaryKey,
+	text,
+	timestamp,
+} from "drizzle-orm/pg-core";
 import { initCols } from "./column.helpers";
 
 export type MuxStatus = "asset_created" | "preparing" | "ready" | "errored";
@@ -26,7 +33,7 @@ export const video = pgTable(
 		maxResolutionTier: d.text().$type<ResolutionTier>(),
 		uploadId: d.text().notNull(),
 		assetId: d.text(),
-		duration: d.numeric({ mode: "number", precision: 2 }).default(0).notNull(),
+		duration: d.doublePrecision().default(0).notNull(),
 		playbackId: d.text(),
 	}),
 	(t) => [
@@ -35,8 +42,9 @@ export const video = pgTable(
 	],
 );
 
-export const videoRelations = relations(video, ({ one }) => ({
+export const videoRelations = relations(video, ({ one, many }) => ({
 	creator: one(user, { fields: [video.createdById], references: [user.id] }),
+	watchListEntries: many(watchList),
 }));
 
 export const user = pgTable("user", {
@@ -99,9 +107,37 @@ export const verification = pgTable("verification", {
 	),
 });
 
+export const watchList = pgTable(
+	"watch_list",
+	(d) => ({
+		userId: d
+			.text()
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		videoId: d
+			.text()
+			.notNull()
+			.references(() => video.id, { onDelete: "cascade" }),
+		createdAt: timestamp({ withTimezone: true })
+			.$defaultFn(() => new Date())
+			.notNull(),
+	}),
+	(t) => [
+		primaryKey({ columns: [t.userId, t.videoId] }),
+		index("watch_list_user_idx").on(t.userId),
+		index("watch_list_video_idx").on(t.videoId),
+	],
+);
+
 export const userRelations = relations(user, ({ many }) => ({
 	account: many(account),
 	session: many(session),
+	watchListEntries: many(watchList),
+}));
+
+export const watchListRelations = relations(watchList, ({ one }) => ({
+	user: one(user, { fields: [watchList.userId], references: [user.id] }),
+	video: one(video, { fields: [watchList.videoId], references: [video.id] }),
 }));
 
 export const accountRelations = relations(account, ({ one }) => ({
