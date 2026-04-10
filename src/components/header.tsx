@@ -6,6 +6,7 @@ import {
   FilmSlateIcon,
   MagnifyingGlassIcon,
   SignOutIcon,
+  UserCircleIcon,
   YoutubeLogoIcon,
 } from "@phosphor-icons/react";
 import Link from "next/link";
@@ -135,6 +136,12 @@ export function Header({ user, variant = "default" }: HeaderProps) {
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => router.push("/profile")}
+                    >
+                      <UserCircleIcon /> Profile
+                    </DropdownMenuItem>
                     {variant === "studio" ? (
                       <DropdownMenuItem
                         className="cursor-pointer"
@@ -200,6 +207,9 @@ export function Header({ user, variant = "default" }: HeaderProps) {
                   <DropdownMenuGroup className={"p-2"}>
                     <p className="text-center text-[10px] text-muted-foreground">
                       App version {appPackage.version}
+                    </p>
+                    <p className="text-center text-[10px] text-muted-foreground">
+                      Built by Shreesha & Team
                     </p>
                   </DropdownMenuGroup>
                 </DropdownMenuContent>

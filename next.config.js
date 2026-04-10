@@ -7,7 +7,11 @@ import "./src/env.js";
 /** @type {import("next").NextConfig} */
 const config = {
 	images: {
-		remotePatterns: [{ hostname: "image.mux.com" }],
+		remotePatterns: [
+			{ hostname: "image.mux.com" },
+			{ hostname: "utfs.io" },
+			{ hostname: "ufs.sh" },
+		],
 	},
 };
 
