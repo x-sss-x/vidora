@@ -35,6 +35,7 @@ export const video = pgTable(
 		assetId: d.text(),
 		duration: d.doublePrecision().default(0).notNull(),
 		playbackId: d.text(),
+		thumbnailKey: d.text(),
 	}),
 	(t) => [
 		index("created_by_idx").on(t.createdById),

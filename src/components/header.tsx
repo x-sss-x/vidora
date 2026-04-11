@@ -28,6 +28,8 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { env } from "@/env";
+import { getUploadthingFileUrl } from "@/lib/uploadthing-url";
 import { authClient } from "@/server/better-auth/client";
 import type { Session } from "@/server/better-auth/config";
 import appPackage from "../../package.json";
@@ -49,6 +51,7 @@ export function Header({ user, variant = "default" }: HeaderProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const { setTheme, theme } = useTheme();
+  const userImageSrc = getUploadthingFileUrl(user?.image);
 
   const handleSearch = (e: React.SubmitEvent) => {
     e.preventDefault();
@@ -114,7 +117,7 @@ export function Header({ user, variant = "default" }: HeaderProps) {
               <DropdownMenu>
                 <DropdownMenuTrigger>
                   <Avatar className="cursor-pointer">
-                    <AvatarImage alt={user.name} src={user.image ?? ""} />
+                    <AvatarImage alt={user.name} src={userImageSrc} />
                     <AvatarFallback>
                       {user.name.charAt(0) ?? "U"}
                     </AvatarFallback>
@@ -124,7 +127,7 @@ export function Header({ user, variant = "default" }: HeaderProps) {
                 <DropdownMenuContent align="end" className={"min-w-2xs"}>
                   <DropdownMenuGroup className={"flex gap-2 p-1.5"}>
                     <Avatar className="cursor-pointer">
-                      <AvatarImage alt={user.name} src={user.image ?? ""} />
+                      <AvatarImage alt={user.name} src={userImageSrc} />
                       <AvatarFallback>
                         {user.name.charAt(0) ?? "U"}
                       </AvatarFallback>
@@ -209,7 +212,8 @@ export function Header({ user, variant = "default" }: HeaderProps) {
                       App version {appPackage.version}
                     </p>
                     <p className="text-center text-[10px] text-muted-foreground">
-                      Built by Shreesha & Team
+                      {env.NEXT_PUBLIC_TEAM_CREDITS_LINE ??
+                        "Built by Shreesha & Team"}
                     </p>
                   </DropdownMenuGroup>
                 </DropdownMenuContent>

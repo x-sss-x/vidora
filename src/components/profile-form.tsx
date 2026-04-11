@@ -2,12 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod/v4";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { env } from "@/env";
 import { UploadButton } from "@/lib/uploadthing";
 import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
@@ -36,7 +37,6 @@ export function ProfileForm() {
   const router = useRouter();
   const utils = api.useUtils();
   const { data: user, isLoading } = api.user.me.useQuery();
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const form = useForm({
     resolver: zodResolver(profileSchema),
@@ -45,10 +45,7 @@ export function ProfileForm() {
     },
   });
 
-  const previewImage = useMemo(
-    () => imageUrl ?? user?.image ?? "",
-    [imageUrl, user?.image],
-  );
+  const previewImage = useMemo(() => user?.image ?? "", [user?.image]);
 
   const { mutate: updateProfile, isPending: isUpdating } =
     api.user.updateProfile.useMutation({
@@ -65,7 +62,6 @@ export function ProfileForm() {
   const handleSubmit = (values: z.infer<typeof profileSchema>) => {
     updateProfile({
       name: values.name.trim(),
-      image: imageUrl ?? user?.image ?? null,
     });
   };
 
@@ -102,42 +98,63 @@ export function ProfileForm() {
                       {(form.watch("name") || user?.name || "U").charAt(0)}
                     </AvatarFallback>
                   </Avatar>
-                  <div
-                    className={cn(
-                      "ut-allowed-content:hidden ut-button:h-8 ut-button:rounded-none ut-button:border ut-button:bg-secondary ut-button:ut-readying:bg-secondary/80 ut-button:ut-uploading:bg-secondary/80 ut-button:px-3 ut-button:text-secondary-foreground ut-button:text-xs",
-                      "ut-label:text-xs",
-                    )}
-                  >
+                  <div className="flex items-center gap-2.5">
                     <UploadButton
+                      appearance={{
+                        button: cn(
+                          buttonVariants({ size: "sm", className: "h-7!" }),
+                        ),
+                        allowedContent: "hidden",
+                      }}
                       endpoint="profileImage"
-                      onClientUploadComplete={(res) => {
+                      onClientUploadComplete={async (res) => {
                         const uploaded = res[0];
-                        const url = uploaded?.ufsUrl ?? uploaded?.url;
-                        if (!url) {
+                        const key =
+                          uploaded?.key ?? uploaded?.ufsUrl ?? uploaded?.url;
+                        if (!key) {
                           toast.error("Upload failed.");
                           return;
                         }
-                        setImageUrl(url);
-                        toast.success("Profile photo uploaded.");
+                        try {
+                          await Promise.all([
+                            utils.user.invalidate(),
+                            utils.video.invalidate(),
+                          ]);
+                          toast.success(
+                            "Profile photo uploaded and saved successfully.",
+                          );
+                          router.refresh();
+                        } catch {
+                          toast.error(
+                            "Profile photo uploaded, but refreshing data failed.",
+                          );
+                        }
                       }}
                       onUploadError={(error) => {
                         toast.error(error.message);
                       }}
                     />
+                    {user?.image && (
+                      <Button
+                        disabled={isUpdating}
+                        onClick={() =>
+                          updateProfile({
+                            name: (form.getValues("name") || user.name).trim(),
+                            image: null,
+                          })
+                        }
+                        size="sm"
+                        type="button"
+                        variant="outline"
+                      >
+                        Remove photo
+                      </Button>
+                    )}
                   </div>
-                  {(imageUrl ?? user?.image) && (
-                    <Button
-                      onClick={() => setImageUrl(null)}
-                      size="sm"
-                      type="button"
-                      variant="ghost"
-                    >
-                      Reset photo
-                    </Button>
-                  )}
                 </div>
                 <FieldDescription>
                   Upload a square image for the best avatar preview.
+                  Re-uploading replaces your current profile photo instantly.
                 </FieldDescription>
               </Field>
 
@@ -161,7 +178,7 @@ export function ProfileForm() {
         </CardContent>
         <CardFooter className="justify-between gap-3">
           <p className="text-muted-foreground text-xs">
-            Built by Shreesha & Team
+            {env.NEXT_PUBLIC_TEAM_CREDITS_LINE ?? "Built by Shreesha & Team"}
           </p>
           <Button disabled={isUpdating} form="profile-form" type="submit">
             {isUpdating ? (

@@ -25,7 +25,8 @@ export const env = createEnv({
 	 * `NEXT_PUBLIC_`.
 	 */
 	client: {
-		// NEXT_PUBLIC_CLIENTVAR: z.string(),
+		NEXT_PUBLIC_TEAM_CREDITS_LINE: z.string().min(1).optional(),
+		NEXT_PUBLIC_UPLOADTHING_PUBLIC_DOMAIN: z.string().url().optional(),
 	},
 
 	/**
@@ -38,6 +39,9 @@ export const env = createEnv({
 		NODE_ENV: process.env.NODE_ENV,
 		MUX_TOKEN_ID: process.env.MUX_TOKEN_ID,
 		MUX_TOKEN_SECRET: process.env.MUX_TOKEN_SECRET,
+		NEXT_PUBLIC_TEAM_CREDITS_LINE: process.env.NEXT_PUBLIC_TEAM_CREDITS_LINE,
+		NEXT_PUBLIC_UPLOADTHING_PUBLIC_DOMAIN:
+			process.env.NEXT_PUBLIC_UPLOADTHING_PUBLIC_DOMAIN,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

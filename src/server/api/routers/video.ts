@@ -1,11 +1,34 @@
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod/v4";
+import { getUploadthingFileUrl } from "@/lib/uploadthing-url";
 import { video, watchList } from "@/server/db/schema";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
-const getThumbnailUrl = (playbackId: string | null) =>
+const getThumbnailUrl = (
+	customThumbnailUrl: string | null,
+	playbackId: string | null,
+) =>
+	getUploadthingFileUrl(customThumbnailUrl) ||
 	`https://image.mux.com/${playbackId}/thumbnail.png?fit_mode=smartcrop&time=35`;
+
+const withCreatorImageUrl = <
+	T extends {
+		creator?: {
+			image: string | null;
+		};
+	},
+>(
+	payload: T,
+) => ({
+	...payload,
+	creator: payload.creator
+		? {
+				...payload.creator,
+				image: getUploadthingFileUrl(payload.creator.image),
+			}
+		: payload.creator,
+});
 
 export const videoRouter = createTRPCRouter({
 	getUploadEndpoint: protectedProcedure.query(async ({ ctx }) => {
@@ -47,9 +70,9 @@ export const videoRouter = createTRPCRouter({
 			const currentUserId = ctx.session?.session?.userId;
 			if (!currentUserId) {
 				return videos.map((v) => ({
-					...v,
+					...withCreatorImageUrl(v),
 					isInWatchList: false,
-					thumbnailUrl: getThumbnailUrl(v.playbackId),
+					thumbnailUrl: getThumbnailUrl(v.thumbnailKey, v.playbackId),
 				}));
 			}
 
@@ -67,9 +90,9 @@ export const videoRouter = createTRPCRouter({
 			const savedVideoIds = new Set(savedVideos.map((v) => v.videoId));
 
 			return videos.map((v) => ({
-				...v,
+				...withCreatorImageUrl(v),
 				isInWatchList: savedVideoIds.has(v.id),
-				thumbnailUrl: getThumbnailUrl(v.playbackId),
+				thumbnailUrl: getThumbnailUrl(v.thumbnailKey, v.playbackId),
 			}));
 		}),
 
@@ -88,9 +111,9 @@ export const videoRouter = createTRPCRouter({
 			const currentUserId = ctx.session?.session?.userId;
 			if (!currentUserId) {
 				return videos.map((v) => ({
-					...v,
+					...withCreatorImageUrl(v),
 					isInWatchList: false,
-					thumbnailUrl: getThumbnailUrl(v.playbackId),
+					thumbnailUrl: getThumbnailUrl(v.thumbnailKey, v.playbackId),
 				}));
 			}
 
@@ -108,9 +131,9 @@ export const videoRouter = createTRPCRouter({
 			const savedVideoIds = new Set(savedVideos.map((v) => v.videoId));
 
 			return videos.map((v) => ({
-				...v,
+				...withCreatorImageUrl(v),
 				isInWatchList: savedVideoIds.has(v.id),
-				thumbnailUrl: getThumbnailUrl(v.playbackId),
+				thumbnailUrl: getThumbnailUrl(v.thumbnailKey, v.playbackId),
 			}));
 		}),
 
@@ -123,7 +146,7 @@ export const videoRouter = createTRPCRouter({
 
 		return videos.map((v) => ({
 			...v,
-			thumbnailUrl: getThumbnailUrl(v.playbackId),
+			thumbnailUrl: getThumbnailUrl(v.thumbnailKey, v.playbackId),
 		}));
 	}),
 
@@ -144,9 +167,9 @@ export const videoRouter = createTRPCRouter({
 			.map((entry) => entry.video)
 			.filter((v) => v.status === "ready")
 			.map((v) => ({
-				...v,
+				...withCreatorImageUrl(v),
 				isInWatchList: true,
-				thumbnailUrl: getThumbnailUrl(v.playbackId),
+				thumbnailUrl: getThumbnailUrl(v.thumbnailKey, v.playbackId),
 			}));
 	}),
 
@@ -169,7 +192,7 @@ export const videoRouter = createTRPCRouter({
 
 			return {
 				...video,
-				thumbnailUrl: getThumbnailUrl(video.playbackId),
+				thumbnailUrl: getThumbnailUrl(video.thumbnailKey, video.playbackId),
 			};
 		}),
 
@@ -204,9 +227,9 @@ export const videoRouter = createTRPCRouter({
 				: null;
 
 			return {
-				...video,
+				...withCreatorImageUrl(video),
 				isInWatchList: Boolean(saved),
-				thumbnailUrl: getThumbnailUrl(video.playbackId),
+				thumbnailUrl: getThumbnailUrl(video.thumbnailKey, video.playbackId),
 			};
 		}),
 

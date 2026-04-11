@@ -5,6 +5,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { env } from "@/env";
 import { cn } from "@/lib/utils";
 import { TRPCReactProvider } from "@/trpc/react";
 
@@ -49,7 +50,7 @@ export default function RootLayout({
               {children}
               {authModal}
               <footer className="flex h-14 items-center justify-center text-muted-foreground">
-                Built by Shreesha & Team
+                {env.NEXT_PUBLIC_TEAM_CREDITS_LINE ?? "Built by Shreesha & Team"}
               </footer>
             </TRPCReactProvider>
           </ThemeProvider>

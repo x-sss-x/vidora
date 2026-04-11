@@ -1,11 +1,12 @@
 import { eq } from "drizzle-orm";
 import { z } from "zod/v4";
+import { getUploadthingFileUrl } from "@/lib/uploadthing-url";
 import { user } from "@/server/db/schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const userRouter = createTRPCRouter({
 	me: protectedProcedure.query(async ({ ctx }) => {
-		return ctx.db.query.user.findFirst({
+		const currentUser = await ctx.db.query.user.findFirst({
 			where: ({ id }, { eq }) => eq(id, ctx.session.user.id),
 			columns: {
 				id: true,
@@ -14,13 +15,20 @@ export const userRouter = createTRPCRouter({
 				image: true,
 			},
 		});
+
+		if (!currentUser) return null;
+
+		return {
+			...currentUser,
+			image: getUploadthingFileUrl(currentUser.image),
+		};
 	}),
 
 	updateProfile: protectedProcedure
 		.input(
 			z.object({
 				name: z.string().min(2).max(120),
-				image: z.string().url().optional().nullable(),
+				image: z.string().min(1).optional().nullable(),
 			}),
 		)
 		.mutation(async ({ ctx, input }) => {
@@ -38,6 +46,11 @@ export const userRouter = createTRPCRouter({
 					image: user.image,
 				});
 
-			return updatedUser;
+			if (!updatedUser) return updatedUser;
+
+			return {
+				...updatedUser,
+				image: getUploadthingFileUrl(updatedUser.image),
+			};
 		}),
 });
